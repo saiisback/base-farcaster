@@ -29,36 +29,38 @@ export function WalletActions() {
 
   if (isConnected) {
     return (
-      <div className="space-y-4 rounded-xl p-4 bg-[#001226] border border-[#0A5CDD]/40">
-        <h2 className="text-xl font-bold text-left text-white">Wallet</h2>
-        <div className="flex flex-row space-x-4 justify-start items-start">
-          <div className="flex flex-col space-y-4 justify-start">
-            <p className="text-sm text-left text-[#A3B3C2]">
-              Connected to wallet:{' '}
-              <span className="bg-white font-mono text-black rounded-md p-[4px]">
+      <div className="baseneko-card space-y-3 rounded-2xl border-4 border-[#5D4037] p-4 text-[#5D4037]">
+        <h2 className="text-[11px] font-normal leading-none">wallet</h2>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1 text-[9px]">
+            <p className="flex flex-col gap-1">
+              <span className="text-[#6D4C41]">connected to wallet:</span>
+              <span className="baseneko-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap bg-[#FFF8E1] px-2 py-1 font-mono text-[8px] text-[#3E2723]">
                 {address}
               </span>
             </p>
-            <p className="text-sm text-left text-[#A3B3C2]">
-              Chain Id:{' '}
-              <span className="bg-white font-mono text-black rounded-md p-[4px]">
+            <p className="flex items-center gap-2">
+              <span className="text-[#6D4C41]">chain id:</span>
+              <span className="baseneko-pill bg-[#FFF8E1] px-2 py-1 text-[8px] text-[#3E2723]">
                 {chainId}
               </span>
             </p>
             {chainId === base.id ? (
-              <div className="flex flex-col space-y-2 border border-[#0A5CDD]/30 p-4 rounded-md bg-[#031B36]">
-                <h2 className="text-lg font-semibold text-left text-white">Send Transaction Example</h2>
+              <div className="mt-2 flex flex-col gap-2 rounded-xl border-2 border-dashed border-[#BCAAA4] bg-[#FFFDE7] p-3">
+                <h3 className="text-[9px] font-normal text-[#5D4037]">
+                  send transaction example
+                </h3>
                 <button
                   type="button"
-                  className="bg-[#0A5CDD] hover:bg-[#0b6ef3] text-white rounded-md p-2 text-sm"
+                  className="rounded-md bg-[#5D4037] px-3 py-2 text-[9px] text-[#FFF8E1] shadow-[0_2px_0_0_rgba(93,64,55,0.8)] active:translate-y-0.5 active:shadow-none"
                   onClick={sendTransactionHandler}
                 >
-                  Send Transaction
+                  send 1 test eth
                 </button>
                 {hash && (
                   <button
                     type="button"
-                    className="bg-white text-black rounded-md p-2 text-sm"
+                    className="rounded-md bg-[#FFF8E1] px-3 py-2 text-[9px] text-[#3E2723] shadow-[0_2px_0_0_rgba(93,64,55,0.4)] active:translate-y-0.5 active:shadow-none"
                     onClick={() =>
                       window.open(
                         `https://basescan.org/tx/${hash}`,
@@ -66,26 +68,26 @@ export function WalletActions() {
                       )
                     }
                   >
-                    View Transaction
+                    view on basescan
                   </button>
                 )}
               </div>
             ) : (
               <button
                 type="button"
-                className="bg-[#0A5CDD] hover:bg-[#0b6ef3] text-white rounded-md p-2 text-sm"
+                className="mt-2 rounded-md bg-[#A5D6A7] px-3 py-2 text-[9px] text-[#3E2723] shadow-[0_2px_0_0_rgba(93,64,55,0.6)] active:translate-y-0.5 active:shadow-none"
                 onClick={() => switchChain({ chainId: base.id })}
               >
-                Switch to Base
+                switch to base
               </button>
             )}
 
             <button
               type="button"
-              className="bg-[#11253F] hover:bg-[#1a355a] text-white rounded-md p-2 text-sm border border-[#0A5CDD]/30"
+              className="mt-2 rounded-md bg-[#FFF8E1] px-3 py-2 text-[9px] text-[#5D4037] shadow-[0_2px_0_0_rgba(93,64,55,0.4)] active:translate-y-0.5 active:shadow-none"
               onClick={() => disconnect()}
             >
-              Disconnect Wallet
+              disconnect wallet
             </button>
           </div>
         </div>
@@ -95,12 +97,12 @@ export function WalletActions() {
 
   if (isEthProviderAvailable) {
     return (
-      <div className="space-y-4 rounded-xl p-4 bg-[#001226] border border-[#0A5CDD]/40">
-        <h2 className="text-xl font-bold text-left text-white">Wallet</h2>
-        <div className="flex flex-row space-x-4 justify-start items-start">
+      <div className="baseneko-card space-y-3 rounded-2xl border-4 border-[#5D4037] p-4 text-[#5D4037]">
+        <h2 className="text-[11px] font-normal leading-none">wallet</h2>
+        <div className="flex flex-row justify-start">
           <button
             type="button"
-            className="bg-[#0A5CDD] hover:bg-[#0b6ef3] text-white w-full rounded-md p-3 text-sm"
+            className="w-full rounded-md bg-[#5D4037] px-3 py-2 text-[9px] text-[#FFF8E1] shadow-[0_2px_0_0_rgba(93,64,55,0.8)] active:translate-y-0.5 active:shadow-none"
             onClick={() => {
               if (isEthProviderAvailable) {
                 // Inside Warpcast MiniApp: use the Farcaster connector
@@ -119,10 +121,10 @@ export function WalletActions() {
   }
 
   return (
-    <div className="space-y-4 rounded-xl p-4 bg-[#001226] border border-[#0A5CDD]/40">
-      <h2 className="text-xl font-bold text-left text-white">Wallet</h2>
-      <div className="flex flex-row space-x-4 justify-start items-start">
-        <p className="text-sm text-left text-[#A3B3C2]">Wallet connection only via Warpcast</p>
+    <div className="baseneko-card space-y-2 rounded-2xl border-4 border-[#5D4037] p-4 text-[#5D4037]">
+      <h2 className="text-[11px] font-normal leading-none">wallet</h2>
+      <div className="flex flex-row justify-start">
+        <p className="text-[9px] text-[#8D6E63]">wallet connection only via Warpcast mini app.</p>
       </div>
     </div>
   )

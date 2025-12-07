@@ -1,10 +1,13 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Press_Start_2P } from 'next/font/google'
 
 import { Providers } from '@/components/providers'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const pixelFont = Press_Start_2P({
+  subsets: ['latin'],
+  weight: '400',
+})
 
 export const metadata: Metadata = {
   title: 'Base Farcaster MiniApp Template',
@@ -18,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={pixelFont.className}>
         <Providers>{children}</Providers>
       </body>
     </html>
