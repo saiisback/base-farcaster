@@ -204,7 +204,7 @@ export function SchoolScreen() {
         <header className="flex items-center gap-3">
           <div className="relative h-12 w-12 overflow-hidden rounded-xl border-4 border-[#5D4037] bg-[#FFE4B5]">
             <Image
-              src="/XmasCatFree/Jump.png"
+                src="/cat_Idle.gif"
               alt="Studious neko"
               fill
               className="object-contain"
