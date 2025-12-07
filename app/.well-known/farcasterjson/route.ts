@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { APP_URL } from "../../lib/constants";
+import { APP_URL } from "../../../lib/constants";
 
 export async function GET() {
   const farcasterConfig = {
@@ -17,7 +17,6 @@ export async function GET() {
       splashImageUrl: `${APP_URL}/images/splash.png`,
       splashBackgroundColor: "#ffffff",
       webhookUrl: `${APP_URL}/api/webhook`,
-  
         accountAssociation: {
           "header": "eyJmaWQiOjE1NzA1NTMsInR5cGUiOiJhdXRoIiwia2V5IjoiMHhBMEQ4ZDhiNzgyNWQwMDViMmQ1NmU2NDdkZkY1MDVBODZERjQ1ZDVCIn0",
           "payload": "eyJkb21haW4iOiJwdXItYmFzZS52ZXJjZWwuYXBwIn0",
