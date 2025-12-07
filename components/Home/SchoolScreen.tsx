@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import React, { useState } from 'react'
+import { base } from '@reown/appkit/networks'
 import { useAccount, useWriteContract } from 'wagmi'
 import { BASENEKO_BADGES_ABI, BASENEKO_BADGES_ADDRESS } from '@/lib/abis'
 
@@ -179,6 +180,7 @@ export function SchoolScreen() {
             try {
               if (address) {
                 writeBadges({
+                  chainId: base.id,
                   address: BASENEKO_BADGES_ADDRESS,
                   abi: BASENEKO_BADGES_ABI,
                   functionName: 'mintBadgeForAchievement',
