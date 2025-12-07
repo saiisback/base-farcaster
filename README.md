@@ -57,7 +57,7 @@ Be sure to specify the correct port for your local server.
 #### Set `NEXT_PUBLIC_URL` environment variable in `.env.local` file
 
 ```bash
-NEXT_PUBLIC_URL=<url-from-cloudflared-or-ngrok>
+NEXT_PUBLIC_URL=https://opportunity-correlation-puzzle-reports.trycloudflare.com                    
 ```
 
 #### Use the provided url

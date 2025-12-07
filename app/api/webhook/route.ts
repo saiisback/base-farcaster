@@ -42,11 +42,11 @@ import {
       }
     }
   
-    const fid = data.fid;
-    const event = data.event;
-  
-    switch (event.event) {
-      case "frame_added":
+  const fid = data.fid;
+  const event = data.event;
+
+  switch (event.event) {
+    case "miniapp_added":
         if (event.notificationDetails) {
           await setUserNotificationDetails(fid, event.notificationDetails);
           await sendFrameNotification({
@@ -58,8 +58,8 @@ import {
           await deleteUserNotificationDetails(fid);
         }
   
-        break;
-      case "frame_removed":
+    break;
+    case "miniapp_removed":
         await deleteUserNotificationDetails(fid);
   
         break;
