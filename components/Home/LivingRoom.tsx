@@ -14,12 +14,12 @@ import {
 
 export function LivingRoom() {
   const { address } = useAccount()
-  const [tokenIdInput, setTokenIdInput] = useState('1')
-  const [lastAction, setLastAction] = useState<'feed' | 'play' | null>(null)
+        const [lastAction, setLastAction] = useState<'feed' | 'play' | null>(null)
   const [feedCount, setFeedCount] = useState<number | null>(null)
   const [recentFeeds, setRecentFeeds] = useState<
     { id: number; txHash: string; createdAt: string }[]
   >([])
+  const [validationError, setValidationError] = useState<string | null>(null)
 
   const {
     writeContract,
@@ -52,6 +52,19 @@ export function LivingRoom() {
   const hasTutorBadge = (tutorBalance ?? 0n) > 0n
   const hasCaretakerBadge = (caretakerBalance ?? 0n) > 0n
 
+  const { data: myBalance, isLoading: isTokenLoading } = useReadContract({
+    address: BASENEKO_NEKO_ADDRESS,
+    abi: BASENEKO_NEKO_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
+    chainId: base.id,
+    query: {
+      enabled: Boolean(address),
+    },
+  })
+
+  const hasNeko = (myBalance ?? 0n) > 0n
+
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
     confirmations: 1,
@@ -60,37 +73,8 @@ export function LivingRoom() {
     },
   })
 
-  const tokenIdNumber = Number(tokenIdInput)
-  const hasValidTokenId = Number.isFinite(tokenIdNumber) && tokenIdNumber > 0
-
-  async function refreshHistory() {
-    if (!address || !hasValidTokenId) return
-
-    try {
-      const res = await fetch(
-        `/api/neko-events?address=${address}&tokenId=${tokenIdNumber}`,
-      )
-      if (!res.ok) return
-      const data = await res.json()
-      if (data.ok) {
-        setFeedCount(data.feedCount ?? 0)
-        const feeds =
-          (data.events as { id: number; action: string; txHash: string; createdAt: string }[]) ||
-          []
-        setRecentFeeds(
-          feeds.filter((e) => e.action === 'feed').slice(0, 5),
-        )
-      }
-    } catch {
-      // ignore
-    }
-  }
-
-  useEffect(() => {
-    void refreshHistory()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    // we intentionally depend only on address + tokenIdNumber
-  }, [address, tokenIdNumber])
+  // history is disabled while tokenId is internal; feed/play still work on-chain
+  const refreshHistory = () => {}
 
   function handleAdopt() {
     writeContract({
@@ -103,7 +87,12 @@ export function LivingRoom() {
   }
 
   function handleCall(action: 'feed' | 'play') {
-    if (!hasValidTokenId) {
+    if (!address) {
+      setValidationError('connect a wallet first.')
+      return
+    }
+    if (!hasNeko) {
+      setValidationError('adopt a neko first.')
       return
     }
 
@@ -114,7 +103,7 @@ export function LivingRoom() {
       address: BASENEKO_NEKO_ADDRESS,
       abi: BASENEKO_NEKO_ABI,
       functionName: action,
-      args: [BigInt(tokenIdNumber)],
+      args: [address],
     })
   }
 
@@ -130,24 +119,18 @@ export function LivingRoom() {
   if (error) {
     txStatus = 'something went wrong, neko could not act.'
   }
+  if (validationError) {
+    txStatus = validationError
+  } else if (isTokenLoading) {
+    txStatus = 'checking your neko…'
+  }
 
   useEffect(() => {
     async function logAndRefresh() {
-      if (!isSuccess || !hash || !address || !hasValidTokenId || !lastAction) return
+      if (!isSuccess || !hash || !address || !hasNeko || !lastAction) return
 
       try {
-        await fetch('/api/neko-events', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            address,
-            tokenId: tokenIdNumber,
-            action: lastAction,
-            txHash: hash,
-          }),
-        })
+        // skipping event logging because tokenId is internal-only now
       } catch {
         // ignore logging error; on-chain tx is still valid
       } finally {
@@ -214,27 +197,20 @@ export function LivingRoom() {
             </div>
           </div>
 
-          <div className="mt-1 flex flex-col gap-1 text-[8px] text-[#5D4037]">
-            <span className="text-[9px]">your neko id</span>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min={1}
-                value={tokenIdInput}
-                onChange={(e) => setTokenIdInput(e.target.value)}
-                className="baseneko-pill w-20 bg-[#FFF8E1] px-2 py-1 text-[9px] text-[#3E2723] outline-none"
-              />
-              <span className="text-[8px] text-[#8D6E63]">
-                use the token id you adopted (e.g. 1). for now, check it in the Adopt event logs.
+          <div className="mt-1 flex flex-col gap-2 text-[8px] text-[#5D4037]">
+            <div className="flex items-center justify-between rounded-lg bg-[#FFF8E1] px-3 py-2">
+              <span className="text-[9px] font-semibold">your neko</span>
+              <span className="text-[9px] text-[#3E2723]">
+                {hasNeko ? 'owned' : 'none yet'}
               </span>
             </div>
             <button
               type="button"
               onClick={handleAdopt}
-              disabled={!address || isPending}
-              className="mt-2 w-full rounded-md bg-[#A5D6A7] px-3 py-2 text-[9px] text-[#3E2723] shadow-[0_2px_0_0_rgba(93,64,55,0.6)] active:translate-y-0.5 active:shadow-none disabled:translate-y-0 disabled:opacity-60 disabled:shadow-none"
+              disabled={!address || isPending || hasNeko}
+              className="w-full rounded-md bg-[#A5D6A7] px-3 py-2 text-[9px] text-[#3E2723] shadow-[0_2px_0_0_rgba(93,64,55,0.6)] active:translate-y-0.5 active:shadow-none disabled:translate-y-0 disabled:opacity-60 disabled:shadow-none"
             >
-              adopt a new neko ✨
+              {hasNeko ? 'you already adopted a neko' : 'adopt your neko ✨'}
             </button>
           </div>
 
@@ -242,7 +218,7 @@ export function LivingRoom() {
             <button
               type="button"
               onClick={() => handleCall('feed')}
-              disabled={!address || !hasValidTokenId || isPending}
+              disabled={!address || !hasNeko || isPending}
               className="flex-1 rounded-md bg-[#5D4037] px-3 py-2 text-[9px] text-[#FFF8E1] shadow-[0_2px_0_0_rgba(93,64,55,0.8)] active:translate-y-0.5 active:shadow-none disabled:translate-y-0 disabled:opacity-60 disabled:shadow-none"
             >
               feed snack 🍗
@@ -250,7 +226,7 @@ export function LivingRoom() {
             <button
               type="button"
               onClick={() => handleCall('play')}
-              disabled={!address || !hasValidTokenId || isPending}
+              disabled={!address || !hasNeko || isPending}
               className="flex-1 rounded-md bg-[#A5D6A7] px-3 py-2 text-[9px] text-[#3E2723] shadow-[0_2px_0_0_rgba(93,64,55,0.6)] active:translate-y-0.5 active:shadow-none disabled:translate-y-0 disabled:opacity-60 disabled:shadow-none"
             >
               play yarn 🧶
@@ -287,48 +263,7 @@ export function LivingRoom() {
         </section>
 
         <section className="flex flex-col gap-2 text-[8px] text-[#8D6E63]">
-          <p>
-            feed history:{' '}
-            {feedCount === null ? 'loading…' : `your neko has been fed ${feedCount} time(s).`}
-          </p>
-          {recentFeeds.length > 0 && (
-            <div className="rounded-2xl border-2 border-dashed border-[#BCAAA4] bg-[#FFFDE7] p-3 text-[#6D4C41]">
-              <p className="mb-1 text-[9px] text-[#5D4037]">recent feed txs</p>
-              <ul className="space-y-1">
-                {recentFeeds.map((e) => (
-                  <li key={e.id} className="flex items-center justify-between gap-2">
-                    <span className="truncate">
-                      {e.txHash.slice(0, 6)}…{e.txHash.slice(-4)}
-                    </span>
-                    <span className="text-[7px] opacity-80">
-                      {new Date(e.createdAt).toLocaleTimeString()}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {address && feedCount !== null && feedCount >= 3 && (
-            <button
-              type="button"
-              className="mt-2 w-full rounded-md bg-[#5D4037] px-3 py-2 text-[9px] text-[#FFF8E1] shadow-[0_2px_0_0_rgba(93,64,55,0.8)] active:translate-y-0.5 active:shadow-none"
-              onClick={() => {
-                try {
-                  writeBadges({
-                    chainId: base.id,
-                    address: BASENEKO_BADGES_ADDRESS,
-                    abi: BASENEKO_BADGES_ABI,
-                    functionName: 'mintBadgeForAchievement',
-                    args: ['neko caretaker'],
-                  })
-                } catch {
-                  // ignore badge mint errors in UI
-                }
-              }}
-            >
-              claim "neko caretaker" badge 🎖️
-            </button>
-          )}
+          <p>feed history is disabled because token IDs are internal now.</p>
         </section>
 
         {address && (
