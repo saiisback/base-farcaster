@@ -20,7 +20,7 @@ export function LoginScreen() {
           <div className="flex items-center gap-3">
             <div className="relative h-16 w-16 overflow-hidden rounded-xl border-4 border-[#5D4037] bg-[#FFE4B5]">
               <Image
-                src="/catbox.gif"
+                src="/Catbox.gif"
                 alt="Baseneko curled up in a box"
                 fill
                 className="object-contain"
@@ -49,7 +49,7 @@ export function LoginScreen() {
           <section className="flex items-center justify-center">
             <div className="relative h-32 w-40 rounded-2xl border-4 border-[#5D4037] bg-[#FFE4B5] sm:h-36 sm:w-44">
               <Image
-                src="/cat_Idle.gif"
+                src="/Cat_Idle.gif"
                 alt="Running pixel neko"
                 fill
                 className="object-contain"
