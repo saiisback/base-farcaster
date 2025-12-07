@@ -30,13 +30,13 @@ function getBadgeMetadata(id: string) {
       return {
         name: 'the tutor',
         description: 'Awarded for teaching your neko their first lesson.',
-        image: 'https://pur-base.vercel.app/images/badges/the-tutor.png',
+        image: 'https://pur-base.vercel.app/images/badges/tutor.png',
       }
     case 2:
       return {
         name: 'neko caretaker',
         description: 'Awarded for consistent feeding and play sessions.',
-        image: 'https://pur-base.vercel.app/images/badges/neko-caretaker.png',
+        image: 'https://pur-base.vercel.app/images/badges/caretaker.png',
       }
     default:
       return {
