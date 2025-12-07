@@ -18,7 +18,6 @@ if (!projectId) {
   throw new Error("Project ID is not defined");
 }
 
-
 // App metadata (required for AppKit modal)
 const metadata = {
   name: "Farcaster Wallet Example",
@@ -31,6 +30,7 @@ const metadata = {
 createAppKit({
   adapters: [wagmiAdapter],
   projectId,
+  // Use Base mainnet for production interactions
   networks: [base],
   defaultNetwork: base,
   metadata,

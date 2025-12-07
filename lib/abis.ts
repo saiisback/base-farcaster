@@ -1,4 +1,4 @@
-export const BASENEKO_NEKO_ADDRESS = '0x415bBf158BDdeEAb1dF8D373F9AacBa4F37475Ce' as const
+export const BASENEKO_NEKO_ADDRESS = '0xE67B1D6A802f1f62cA2f5a042fc24501774C7D38' as const
 
 export const BASENEKO_BADGES_ADDRESS = '0x4C600f148400f0D7Bdfefd6A4Cb5823D9cA21Aac' as const
 
@@ -39,4 +39,3 @@ export const BASENEKO_BADGES_ABI = [
     outputs: [],
   },
 ] as const
-

@@ -8,7 +8,7 @@ const Navbar = () => {
         <div className="flex items-center gap-2">
           <div className="relative h-9 w-9 overflow-hidden rounded-md border-2 border-[#5D4037] bg-[#FFE4B5]">
             <Image
-              src="cat_idle.gif"
+              src="/Cat_Idle.gif"
               alt="Baseneko"
               fill
               className="object-contain"

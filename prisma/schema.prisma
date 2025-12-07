@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model NekoEvent {
+  id        Int      @id @default(autoincrement())
+  address   String
+  tokenId   Int
+  action    String // "feed" | "play" | "adopt"
+  txHash    String
+  createdAt DateTime @default(now())
+
+  @@index([address, tokenId, createdAt])
+}
+
+model NekoLesson {
+  id         Int      @id @default(autoincrement())
+  address    String // wallet address of the neko parent (or a synthetic id)
+  topic      String
+  mode       String // "concept" | "exam" | "intuition"
+  questions  Json
+  answers    Json
+  score      Int // 0–100, based on how complete the answers are
+  review     String?
+  cheatSheet String?
+  createdAt  DateTime @default(now())
+
+  @@index([address, createdAt])
+}

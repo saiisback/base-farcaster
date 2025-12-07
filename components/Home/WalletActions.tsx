@@ -23,7 +23,7 @@ export function WalletActions() {
   async function sendTransactionHandler() {
     sendTransaction({
       to: '0x7f748f154B6D180D35fA12460C7E4C631e28A9d7',
-      value: parseEther('1'),
+      value: parseEther('0.0001'),
     })
   }
 
@@ -55,7 +55,7 @@ export function WalletActions() {
                   className="rounded-md bg-[#5D4037] px-3 py-2 text-[9px] text-[#FFF8E1] shadow-[0_2px_0_0_rgba(93,64,55,0.8)] active:translate-y-0.5 active:shadow-none"
                   onClick={sendTransactionHandler}
                 >
-                  send 1 test eth
+                  send 0.0001 eth
                 </button>
                 {hash && (
                   <button

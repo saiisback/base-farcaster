@@ -1,21 +1,49 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-/// @title Baseneko Badges - minimal ERC1155-style inspiration
-/// @notice This is a lightweight “inspo” contract mirroring the 3 badges
-///         described in the design doc. It is not wired to the frontend yet.
-contract BasenekoBadges {
-    /// @dev Badge IDs: 1 = First Words, 2 = The Scholar, 3 = Best Parent.
-    mapping(uint256 => mapping(address => uint256)) public balanceOf;
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
+contract BasenekoBadges is ERC1155, Ownable {
     event BadgeMinted(address indexed to, uint256 indexed id, uint256 amount);
 
-    /// @notice Mint a specific badge to a user.
-    /// @dev In a real deployment, access control + game logic would gate this.
-    function mintBadge(address to, uint256 id, uint256 amount) external {
-        require(id >= 1 && id <= 3, "invalid badge id");
-        balanceOf[id][to] += amount;
+    string public name = "Baseneko Badges";
+    string public symbol = "NEKOBADGE";
+
+    uint256 public nextBadgeId = 1;
+
+    // achievement label (hashed) -> badge id
+    mapping(bytes32 => uint256) public achievementToBadgeId;
+    // human‑readable label for each badge id, e.g. "the tutor", "neko caretaker"
+    mapping(uint256 => string) public badgeLabel;
+
+    constructor(string memory baseURI) ERC1155(baseURI) Ownable(msg.sender) {}
+
+    function mintBadgeForAchievement(address to, string calldata achievement) external onlyOwner {
+        require(to != address(0), "invalid recipient");
+
+        bytes32 key = keccak256(bytes(achievement));
+        uint256 id = achievementToBadgeId[key];
+
+        if (id == 0) {
+            id = nextBadgeId++;
+            achievementToBadgeId[key] = id;
+            badgeLabel[id] = achievement;
+        }
+
+        _mint(to, id, 1, "");
+        emit BadgeMinted(to, id, 1);
+    }
+
+    function mintBadge(address to, uint256 id, uint256 amount) external onlyOwner {
+        require(to != address(0), "invalid recipient");
+        require(amount > 0, "amount must be > 0");
+
+        _mint(to, id, amount, "");
         emit BadgeMinted(to, id, amount);
     }
-}
 
+    function setURI(string memory newURI) external onlyOwner {
+        _setURI(newURI);
+    }
+}
