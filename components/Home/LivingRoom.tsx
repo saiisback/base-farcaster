@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
+import { base } from '@reown/appkit/networks'
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 
 import {
@@ -93,6 +94,7 @@ export function LivingRoom() {
 
   function handleAdopt() {
     writeContract({
+      chainId: base.id,
       address: BASENEKO_NEKO_ADDRESS,
       abi: BASENEKO_NEKO_ABI,
       functionName: 'adopt',
@@ -108,6 +110,7 @@ export function LivingRoom() {
     setLastAction(action)
 
     writeContract({
+      chainId: base.id,
       address: BASENEKO_NEKO_ADDRESS,
       abi: BASENEKO_NEKO_ABI,
       functionName: action,
@@ -312,6 +315,7 @@ export function LivingRoom() {
               onClick={() => {
                 try {
                   writeBadges({
+                    chainId: base.id,
                     address: BASENEKO_BADGES_ADDRESS,
                     abi: BASENEKO_BADGES_ABI,
                     functionName: 'mintBadgeForAchievement',
