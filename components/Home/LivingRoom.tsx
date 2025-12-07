@@ -2,9 +2,14 @@
 
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 
-import { BASENEKO_NEKO_ABI, BASENEKO_NEKO_ADDRESS } from '@/lib/abis'
+import {
+  BASENEKO_BADGES_ABI,
+  BASENEKO_BADGES_ADDRESS,
+  BASENEKO_NEKO_ABI,
+  BASENEKO_NEKO_ADDRESS,
+} from '@/lib/abis'
 
 export function LivingRoom() {
   const { address } = useAccount()
@@ -21,6 +26,30 @@ export function LivingRoom() {
     isPending,
     error,
   } = useWriteContract()
+  const { writeContract: writeBadges } = useWriteContract()
+
+  const { data: tutorBalance } = useReadContract({
+    address: BASENEKO_BADGES_ADDRESS,
+    abi: BASENEKO_BADGES_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address, 1n] : undefined,
+    query: {
+      enabled: Boolean(address),
+    },
+  })
+
+  const { data: caretakerBalance } = useReadContract({
+    address: BASENEKO_BADGES_ADDRESS,
+    abi: BASENEKO_BADGES_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address, 2n] : undefined,
+    query: {
+      enabled: Boolean(address),
+    },
+  })
+
+  const hasTutorBadge = (tutorBalance ?? 0n) > 0n
+  const hasCaretakerBadge = (caretakerBalance ?? 0n) > 0n
 
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
@@ -59,6 +88,7 @@ export function LivingRoom() {
   useEffect(() => {
     void refreshHistory()
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // we intentionally depend only on address + tokenIdNumber
   }, [address, tokenIdNumber])
 
   function handleAdopt() {
@@ -98,7 +128,6 @@ export function LivingRoom() {
     txStatus = 'something went wrong, neko could not act.'
   }
 
-  // After a successful feed/play tx, record it in the Neon/Prisma DB
   useEffect(() => {
     async function logAndRefresh() {
       if (!isSuccess || !hash || !address || !hasValidTokenId || !lastAction) return
@@ -276,7 +305,50 @@ export function LivingRoom() {
               </ul>
             </div>
           )}
+          {address && feedCount !== null && feedCount >= 3 && (
+            <button
+              type="button"
+              className="mt-2 w-full rounded-md bg-[#5D4037] px-3 py-2 text-[9px] text-[#FFF8E1] shadow-[0_2px_0_0_rgba(93,64,55,0.8)] active:translate-y-0.5 active:shadow-none"
+              onClick={() => {
+                try {
+                  writeBadges({
+                    address: BASENEKO_BADGES_ADDRESS,
+                    abi: BASENEKO_BADGES_ABI,
+                    functionName: 'mintBadgeForAchievement',
+                    args: ['neko caretaker'],
+                  })
+                } catch {
+                  // ignore badge mint errors in UI
+                }
+              }}
+            >
+              claim "neko caretaker" badge 🎖️
+            </button>
+          )}
         </section>
+
+        {address && (
+          <section className="baseneko-card mt-1 flex flex-col gap-2 rounded-2xl p-4 text-[8px] text-[#5D4037]">
+            <p className="text-[9px] font-normal">your badges</p>
+            {!hasTutorBadge && !hasCaretakerBadge && (
+              <p className="text-[8px] text-[#8D6E63]">
+                no badges yet. teach your neko a lesson or care for it to earn badges.
+              </p>
+            )}
+            {hasTutorBadge && (
+              <div className="flex items-center justify-between rounded-xl bg-[#FFFDE7] px-3 py-2">
+                <span className="text-[9px] font-semibold">the tutor</span>
+                <span className="text-[8px] text-[#6D4C41]">earned from school lessons</span>
+              </div>
+            )}
+            {hasCaretakerBadge && (
+              <div className="flex items-center justify-between rounded-xl bg-[#FFFDE7] px-3 py-2">
+                <span className="text-[9px] font-semibold">neko caretaker</span>
+                <span className="text-[8px] text-[#6D4C41]">earned from feeding your neko</span>
+              </div>
+            )}
+          </section>
+        )}
       </div>
     </div>
   )

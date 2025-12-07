@@ -1,6 +1,6 @@
 export const BASENEKO_NEKO_ADDRESS = '0xE67B1D6A802f1f62cA2f5a042fc24501774C7D38' as const
 
-export const BASENEKO_BADGES_ADDRESS = '0x4C600f148400f0D7Bdfefd6A4Cb5823D9cA21Aac' as const
+export const BASENEKO_BADGES_ADDRESS = '0x3BFbC647D8809eD43246Efd79F2aeB44eFd2E3d5' as const
 
 export const BASENEKO_NEKO_ABI = [
   {
@@ -37,5 +37,29 @@ export const BASENEKO_BADGES_ABI = [
       { name: 'amount', type: 'uint256' },
     ],
     outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'mintBadgeForAchievement',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'achievement', type: 'string' }],
+    outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'balanceOf',
+    stateMutability: 'view',
+    inputs: [
+      { name: 'account', type: 'address' },
+      { name: 'id', type: 'uint256' },
+    ],
+    outputs: [{ name: 'balance', type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'badgeLabel',
+    stateMutability: 'view',
+    inputs: [{ name: 'id', type: 'uint256' }],
+    outputs: [{ name: 'label', type: 'string' }],
   },
 ] as const

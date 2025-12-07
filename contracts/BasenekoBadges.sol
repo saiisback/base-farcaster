@@ -19,9 +19,8 @@ contract BasenekoBadges is ERC1155, Ownable {
 
     constructor(string memory baseURI) ERC1155(baseURI) Ownable(msg.sender) {}
 
-    function mintBadgeForAchievement(address to, string calldata achievement) external onlyOwner {
-        require(to != address(0), "invalid recipient");
-
+    // Anyone can claim a badge for a given achievement; it always mints to msg.sender.
+    function mintBadgeForAchievement(string calldata achievement) external {
         bytes32 key = keccak256(bytes(achievement));
         uint256 id = achievementToBadgeId[key];
 
@@ -31,8 +30,8 @@ contract BasenekoBadges is ERC1155, Ownable {
             badgeLabel[id] = achievement;
         }
 
-        _mint(to, id, 1, "");
-        emit BadgeMinted(to, id, 1);
+        _mint(msg.sender, id, 1, "");
+        emit BadgeMinted(msg.sender, id, 1);
     }
 
     function mintBadge(address to, uint256 id, uint256 amount) external onlyOwner {

@@ -2,7 +2,8 @@
 
 import Image from 'next/image'
 import React, { useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useAccount, useWriteContract } from 'wagmi'
+import { BASENEKO_BADGES_ABI, BASENEKO_BADGES_ADDRESS } from '@/lib/abis'
 
 type StudyMode = 'concept' | 'exam' | 'intuition'
 
@@ -44,6 +45,7 @@ export function SchoolScreen() {
   const [mode, setMode] = useState<StudyMode>('concept')
   const [cheatSheet, setCheatSheet] = useState<string>('')
   const [isGenerating, setIsGenerating] = useState(false)
+  const { writeContract: writeBadges } = useWriteContract()
 
   const filledCount = answers.filter((a) => a.trim().length > 5).length
   const score = (filledCount / 3) * 100
@@ -71,7 +73,6 @@ export function SchoolScreen() {
     setReviewError(null)
     setCheatSheet('')
 
-    // If there is no topic yet, just fall back to local templates
     if (!trimmedTopic) {
       setQuestions(buildDefaultQuestions(trimmedTopic, mode))
       return
@@ -147,14 +148,12 @@ export function SchoolScreen() {
           const data = (await res.json()) as { ok?: boolean; review?: string; error?: string }
           if (!data.ok || !data.review) {
             setReviewError(
-              data.error ||
-                'neko teacher sent back a confusing answer. please try again in a bit.',
+              data.error || 'neko teacher sent back a confusing answer. please try again in a bit.',
             )
           } else {
             setReviewText(data.review)
             setHasReviewed(true)
 
-            // Fire-and-forget: persist this lesson to the database
             try {
               const effectiveAddress = address ?? 'anonymous'
               await fetch('/api/neko-lessons', {
@@ -175,6 +174,19 @@ export function SchoolScreen() {
               })
             } catch {
               // ignore persistence errors in the UI
+            }
+
+            try {
+              if (address) {
+                writeBadges({
+                  address: BASENEKO_BADGES_ADDRESS,
+                  abi: BASENEKO_BADGES_ABI,
+                  functionName: 'mintBadgeForAchievement',
+                  args: ['the tutor'],
+                })
+              }
+            } catch {
+              // ignore badge minting errors in the UI
             }
           }
         }
