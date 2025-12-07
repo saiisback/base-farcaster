@@ -163,7 +163,7 @@ export function LivingRoom() {
         <header className="flex items-center gap-3">
           <div className="relative h-12 w-12 overflow-hidden rounded-xl border-4 border-[#5D4037] bg-[#FFE4B5]">
             <Image
-              src="/catbox.gif"
+              src="/Catbox.gif"
               alt="Relaxed pixel neko"
               fill
               className="object-contain"
@@ -181,7 +181,7 @@ export function LivingRoom() {
           <div className="flex items-center justify-between gap-3">
             <div className="relative h-20 w-24 rounded-2xl border-4 border-[#5D4037] bg-[#FFE4B5]">
               <Image
-                src="/catbox.gif"
+                src="/Catbox.gif"
                 alt="Neko in a cozy room"
                 fill
                 className="object-contain"
